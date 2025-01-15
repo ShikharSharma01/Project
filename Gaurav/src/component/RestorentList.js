@@ -74,20 +74,6 @@ const RestorentList = () => {
 
     return (
         <div style={{ width: '100%', display: 'flex' }}>
-            <div style={{ width: '30%', height: "100%", maxHeight: '700px', border: '1px solid black' }}>
-                <Card sx={{ maxWidth: 250, margin: 'auto', backgroundColor: '#cacbec' }}>
-                    <CardContent>
-                        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                            Data and Meal Period
-                        </Typography>
-                        <Card sx={{ maxWidth: 150 }}>
-                            <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                                Today - Dinner
-                            </Typography>
-                        </Card>
-                    </CardContent>
-                </Card>
-            </div>
             <div style={{ width: '70%', padding: '20px', maxHeight: '700px', overflow: 'auto' }}>
                 <RightComponentList restourantList={restourantList} />
             </div>

@@ -19,24 +19,24 @@ const TabledDetails = () => {
         "reservationDateTime": ""
     });
     const options = [
-        { id: 1, time: '07:00PM' },
-        { id: 2, time: '07:00PM' },
-        { id: 3, time: '07:00PM' },
+        { id: 1, time: '07:00AM' },
+        { id: 2, time: '12:00PM' },
+        { id: 3, time: '05:00PM' },
         { id: 4, time: '07:00PM' }
     ]
 
     React.useEffect(() => {
         debugger
         const userData = sessionStorage.getItem('userDetails')
-        if(userData === null ){
+        if (userData === null) {
             navigate('/login')
         }
-        else{
+        else {
             const jsonObject = JSON.parse(userData);
             setUserId(jsonObject.id)
         }
-        
-    }, []) 
+
+    }, [])
 
     const handleBookNow = async (e) => {
         // Update reservationDateTime before setting the state
@@ -48,7 +48,7 @@ const TabledDetails = () => {
         console.log(newSelectedData);
 
         try {
-           
+
             const response = await fetch(`http://127.0.0.1:8080/reserve/${restaurantListDetail.id}/${userId}`, {
                 method: 'POST',
                 headers: {
@@ -91,11 +91,10 @@ const TabledDetails = () => {
     }, [])
     return (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', padding: '20px' }}>
-
             <div style={{ width: '60%', border: '1px solid black', marginRight: '5px' }} >
                 <Card>
                     <CardMedia
-                        sx={{ height: 140 }}
+                        // sx={{ height: 140 }}
                         image="https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vZHxlbnwwfDB8MHx8fDA%3D"
                         title="green iguana"
                     />
@@ -126,7 +125,7 @@ const TabledDetails = () => {
                             species, ranging across all continents except Antarctica Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam eum id ratione magni, ab labore beatae reiciendis esse aliquid perferendis, impedit, dolore delectus velit tempora consequatur dolores. Fugiat, quis dolores?
                         </Typography>
                         <CardMedia
-                            sx={{ height: 140, maxWidth: '70%' }}
+                            // sx={{ height: 140, maxWidth: '70%' }}
                             image="https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vZHxlbnwwfDB8MHx8fDA%3D"
                             title="green iguana"
                         />
@@ -141,13 +140,21 @@ const TabledDetails = () => {
                     </CardContent>
                 </Card>
             </div>
-            <div style={{ width: '30%', border: '1px solid black', padding: '10px' }}>
+            <div
+                style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    justifyContent:'space-between',
+                    width: '30%', 
+                    border: '1px solid black', 
+                    padding: '10px'
+                     }}>
                 <CardContent border='1px solid black'>
                     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
                         Table Reservastion deal for
                     </Typography>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <input style={{ padding: '10px', borderRadius: '10px' }}
+                    <div>
+                        <input style={{ padding: '10px',margin:'10px', borderRadius: '10px' }}
                             type="date"
                             id="datePicker"
                             value={selectedDate}
@@ -171,7 +178,7 @@ const TabledDetails = () => {
                         </FormControl>
                     </div>
                 </CardContent>
-                <Stack direction='row' spacing={1}>
+                <Stack direction='row' spacing={1} sx={{ overflow: 'auto', padding: '10px' }}>
                     {options.map(item => (
                         <Chip key={item.id} label={item.time} component="a" href="#basic-chip" clickable />
                     ))}
@@ -190,7 +197,7 @@ const TabledDetails = () => {
                         <Button onClick={handleBookNow} variant="contained" margin='auto' size='large'>Book Now</Button>
 
 
-                      
+
                         <ToastContainer />
                     </CardActionArea>
                 </Card>

@@ -5,6 +5,8 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Button, CardActionArea, CardActions } from '@mui/material';
 
+
+// props.data.id} data={obj} />
 export default function Cards(props) {
     return (
         <Card style={{ margin: "20px 40px" }} sx={{ maxWidth: 400 }}>
@@ -26,6 +28,7 @@ export default function Cards(props) {
                 <CardActions>
                     <Button size="small" color="primary">
                         Book a Table
+                        onClick={() => {}}
                     </Button>
                 </CardActions>
             </CardActionArea>

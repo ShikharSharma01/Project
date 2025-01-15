@@ -1,4 +1,4 @@
-import { Button, Card, CardActionArea, CardContent, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Button, Card, CardActionArea, CardContent, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import Autocomplete from "@mui/material/Autocomplete";
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
@@ -12,11 +12,21 @@ const SignUp = () => {
         password: '',
         confirmPassword: '',
         address: '',
-        userRole: ''
+        userRole: '',
+        cityId: ''
     });
     const [isDisable, setIsDisable] = useState(true);
-
+    const [image, setImage] = useState(null);
     const navigate = useNavigate();
+    const [statesInIndia, setStateInIndia] = React.useState([]);
+    const [citiesOption, setCitiesOption] = React.useState([]);
+    // const [selectedCities, setSelectedCities] = React.useState(0);
+    const [selectedStates, setSelectedStates] = React.useState("");
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+        // setProduct({...product, image: e.target.files[0]})
+    };
 
     const handleOnChange = (e) => {
         console.log("THis", e.target.value);
@@ -30,13 +40,13 @@ const SignUp = () => {
         // Integrate Api here
         e.preventDefault();
         try {
-            const response = await fetch('http://127.0.0.1:8080/user/signup', {
+            const formData = new FormData();
+            formData.append("imageFile", image);
+            formData.append("dto", new Blob([JSON.stringify(signUpData)], { type: "application/json" }));
+
+            const response = await fetch(`http://127.0.0.1:8080/${signUpData.userRole}/signup`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Add any other headers if needed
-                },
-                body: JSON.stringify(signUpData),
+                body: formData
             });
 
             if (!response.ok) {
@@ -67,6 +77,37 @@ const SignUp = () => {
         });
     };
 
+
+    const handleState = async () => {
+        try {
+
+            const response = await fetch("http://127.0.0.1:8080");
+            const states = await response.json();
+            console.log(states);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            setStateInIndia(states)
+
+
+        } catch (error) {
+
+        }
+    }
+
+    React.useEffect(() => {
+        handleState()
+    }, [])
+
+    React.useEffect(() => {
+        console.log(selectedStates);
+        if (selectedStates !== "") {
+            const cities = statesInIndia.find((state) => state.id === parseInt(selectedStates));
+            setCitiesOption(cities.cities);
+        }
+    }, [selectedStates, statesInIndia])
+
     useEffect(() => {
         // Ensure all required fields are filled, including `userType`
         setIsDisable(
@@ -89,104 +130,159 @@ const SignUp = () => {
     signUpData.userRole]);
 
     const allUsers = [
-        { label: "Admin", value: "ROLE_ADMIN" },
-        { label: "Customer", value: "ROLE_CUSTOMER" },
-        { label: "Owner", value: "ROLE_OWNER" }
+        { label: "Customer", value: "user" },
+        { label: "Owner", value: "owner" }
     ];
 
     return (
-        <Card sx={{ maxWidth: 600 }}>
-            <CardActionArea>
-                <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                        SignUp
-                    </Typography>
-
-                    <TextField style={{ width: "100%", marginBottom: '5px' }}
-                        id="outlined-multiline-flexible"
-                        label="First Name"
-                        multiline
-                        maxRows={4}
-                        name='firstName'
-                        value={signUpData.firstName}
-                        onChange={(e) => handleOnChange(e)}
-                    />
-                    <TextField style={{ width: "100%", marginBottom: '5px' }}
-                        id="outlined-multiline-flexible"
-                        label="Last Name"
-                        multiline
-                        maxRows={4}
-                        name='lastName'
-                        value={signUpData.lastName}
-                        onChange={(e) => handleOnChange(e)}
-
-                    />
-                    <TextField style={{ width: "100%", marginBottom: '5px' }}
-                        id="outlined-multiline-flexible"
-                        label="Email"
-                        multiline
-                        maxRows={4}
-                        name='email'
-                        value={signUpData.email}
-                        onChange={(e) => handleOnChange(e)}
-                    />
-                    <TextField style={{ width: "100%", marginBottom: '5px' }}
-                        id="outlined-multiline-flexible"
-                        label="Mobile No."
-                        multiline
-                        maxRows={4}
-                        name='mobileNo'
-                        value={signUpData.mobileNo}
-                        onChange={(e) => handleOnChange(e)}
-                    />
-                    <TextField style={{ width: "100%", marginBottom: '5px' }}
-                        id="outlined-multiline-flexible"
-                        label="Password"
-                        multiline
-                        maxRows={4}
-                        name='password'
-                        value={signUpData.password}
-                        onChange={(e) => handleOnChange(e)}
-                    />
-                    <TextField style={{ width: "100%", marginBottom: '5px' }}
-                        id="outlined-multiline-flexible"
-                        label="Re-Enter Password"
-                        multiline
-                        maxRows={4}
-                        name='confirmPassword'
-                        value={signUpData.confirmPassword}
-                        onChange={(e) => handleOnChange(e)}
-                    />
-                    <TextField style={{ width: "100%", marginBottom: '5px' }}
-                        id="outlined-multiline-flexible"
-                        label="Address"
-                        multiline
-                        maxRows={4}
-                        name='address'
-                        value={signUpData.address}
-                        onChange={(e) => handleOnChange(e)}
-                    />
-                    <InputLabel id="demo-simple-select-label">Role</InputLabel>
-
-                    <Select
-                        sx={{ width: '100px' }}
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={signUpData.userRole}
-                        label="Role"
-                        name='userRole'
-                        onChange={(e) => handleOnChange(e)}
-                    >
-                        {allUsers.map((item, index) => (
-                            <MenuItem key={index} value={item.value}>{item.label}</MenuItem>
-                        ))}
-                        
-                    </Select>
-                    <br />
-                    <Button disabled={isDisable} variant="contained" onClick={handleSubmit}>Submit</Button>
-                </CardContent>
-            </CardActionArea>
-        </Card>
+        <div
+            style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                maxHeight: '95vh',
+                overflowY: 'auto',
+                height: '95vh'
+            }}>
+            <Card sx={{ maxWidth: 600, boxShadow: 3, borderRadius: 2 }}>
+                <CardActionArea>
+                    <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">SignUp</Typography>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                            <TextField
+                                style={{ flex: '1 1 45%' }}
+                                label="First Name"
+                                variant="outlined"
+                                name='firstName'
+                                value={signUpData.firstName}
+                                onChange={handleOnChange}
+                                fullWidth
+                            />
+                            <TextField
+                                style={{ flex: '1 1 45%' }}
+                                label="Last Name"
+                                variant="outlined"
+                                name='lastName'
+                                value={signUpData.lastName}
+                                onChange={handleOnChange}
+                                fullWidth
+                            />
+                            <TextField
+                                style={{ flex: '1 1 45%' }}
+                                label="Email"
+                                variant="outlined"
+                                type="email"
+                                name='email'
+                                value={signUpData.email}
+                                onChange={handleOnChange}
+                                fullWidth
+                            />
+                            <TextField
+                                style={{ flex: '1 1 45%' }}
+                                label="Mobile No."
+                                variant="outlined"
+                                name='mobileNo'
+                                value={signUpData.mobileNo}
+                                onChange={handleOnChange}
+                                fullWidth
+                            />
+                            <TextField
+                                style={{ flex: '1 1 45%' }}
+                                label="Password"
+                                variant="outlined"
+                                type="password"
+                                name='password'
+                                value={signUpData.password}
+                                onChange={handleOnChange}
+                                fullWidth
+                            />
+                            <TextField
+                                style={{ flex: '1 1 45%' }}
+                                label="Re-Enter Password"
+                                variant="outlined"
+                                type="password"
+                                name='confirmPassword'
+                                value={signUpData.confirmPassword}
+                                onChange={handleOnChange}
+                                fullWidth
+                            />
+                            <TextField
+                                style={{ flex: '1 1 45%' }}
+                                label="Address"
+                                variant="outlined"
+                                name='address'
+                                value={signUpData.address}
+                                onChange={handleOnChange}
+                                fullWidth
+                            />
+                            <div style={{ flex: '1 1 45%' }}>
+                                <InputLabel id="image-label">Image</InputLabel>
+                                <input
+                                    type="file"
+                                    onChange={handleImageChange}
+                                    style={{ marginBottom: '10px' }}
+                                />
+                            </div>
+                            <FormControl style={{flex: '1 1 45%', marginBottom: '10px' }}>
+                                <InputLabel id="state-label">State</InputLabel>
+                                <Select
+                                    labelId="state-label"
+                                    label="State"
+                                    name='state'
+                                    value={selectedStates}
+                                    onChange={(e) => setSelectedStates(e.target.value)}
+                                    fullWidth
+                                >
+                                    <MenuItem disabled value="">
+                                        <em>Select State</em>
+                                    </MenuItem>
+                                    {statesInIndia.map((state, index) => (
+                                        <MenuItem key={index} value={state.id}>{state.stateName}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl style={{ flex: '1 1 45%', marginBottom: '10px' }}>
+                                <InputLabel id="city-label">City</InputLabel>
+                                <Select
+                                    labelId="city-label"
+                                    label="City"
+                                    name='cityId'
+                                    value={signUpData.cityId}
+                                    onChange={handleOnChange}
+                                    fullWidth
+                                >
+                                    <MenuItem disabled value="">
+                                        <em>Select City</em>
+                                    </MenuItem>
+                                    {citiesOption.map((city, index) => (
+                                        <MenuItem key={index} value={city.id}>{city.cityName}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl style={{ flex: '1 1 45%', marginBottom: '10px' }}>
+                                <InputLabel id="role-label">Role</InputLabel>
+                                <Select
+                                    labelId="role-label"
+                                    label="Role"
+                                    name='userRole'
+                                    value={signUpData.userRole}
+                                    onChange={handleOnChange}
+                                    fullWidth
+                                >
+                                    <MenuItem disabled value="">
+                                        <em>Select Role</em>
+                                    </MenuItem>
+                                    {allUsers.map((item, index) => (
+                                        <MenuItem key={index} value={item.value}>{item.label}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </div>
+                        <Button disabled={isDisable} variant="contained" onClick={handleSubmit}>SignUP</Button>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
+        </div>
     )
 };
 

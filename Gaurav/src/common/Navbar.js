@@ -17,6 +17,7 @@ import InputBase from '@mui/material/InputBase';
 import { Link, Navigate, json } from 'react-router-dom';
 import { FormControl, InputLabel, Select } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
+import userImage from '../assests/user.png'
 
 const pages = [
     { title: 'Home', path: "/" },
@@ -28,7 +29,8 @@ const settings = [
     { title: 'Profile', path: "/contactus" },
     { title: 'Logout', path: '/login' }
 ];
-// const statesInIndia = [
+
+
 //     'Andaman and Nicobar',
 //     'Andhra Pradesh',
 //     'Arunachal Pradesh',
@@ -161,6 +163,7 @@ function Navbar(props) {
         e.preventDefault();
         sessionStorage.removeItem('userDetails')
         setUserName(undefined)
+        navigate('/home')
     }
 
     const handleCityId = async (stateId) => {
@@ -218,7 +221,7 @@ function Navbar(props) {
         if (state > 0 && selectedCities > 0) {
             navigate('/restorantList', { state: selectedCities })
         }
-    }, [state, selectedCities])
+    }, [state, selectedCities, navigate])
 
 
     const handleNavigate = (e) => {
@@ -237,7 +240,7 @@ function Navbar(props) {
         
         userData === null ? setUserName(undefined) : setUserName(jsonObject?.firstName)
 
-    }, [sessionStorage.getItem('userDetails')])
+    }, [userData])
 
     React.useEffect(() => {
         handleState()
@@ -311,33 +314,34 @@ function Navbar(props) {
                     </Typography>
                     {/* // drop down and search  */}
 
-                    <FormControl style={{ backgroundColor: 'white', width: "250px", marginRight: "10px" }}>
-                        <InputLabel id="demo-simple-select-label">State</InputLabel>
+                    <FormControl 
+                    style={{ width: "250px", marginRight: "10px" }}>
+                        <InputLabel id="state-select-label" sx={{bgcolor:'white'}}>State</InputLabel>
 
                         {/* State */}
                         <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={state}
-                            name="state"
+                            displayEmpty
+                            labelId="state-select-label"
                             label="State"
+                            name="state"
+                            value={state}
                             onChange={handleChangeSelect}
-                            style={{ backgroundColor: 'white' }} // Ensures the Select background is white
-                        >
+                            style={{ backgroundColor: 'white' }} >
+                             <MenuItem disabled value="">
+                                        <em>Select State</em>
+                                    </MenuItem>
                             {statesInIndia.map((states, index) => (
                                 // "id": 1,
                                 // "stateName": "Uttar Pradesh"
                                 <MenuItem key={index} value={states.id}>{states.stateName}</MenuItem>
                             ))}
-
-
                         </Select>
                     </FormControl>
 
-
-                    <FormControl style={{ backgroundColor: 'white', width: "250px" }}>
-                        <InputLabel id="demo-simple-select-label">Cities</InputLabel>
+                    <FormControl style={{  width: "250px" }}>
+                        <InputLabel id="cities-select-label" sx={{bgcolor:'white'}}>Cities</InputLabel>
                         <Select
+                            displayEmpty
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={selectedCities}
@@ -346,6 +350,9 @@ function Navbar(props) {
                             onChange={handleChangeSelect}
                             style={{ backgroundColor: 'white' }}
                         >
+                            <MenuItem disabled value="">
+                                        <em>Select City</em>
+                                    </MenuItem>
                             {citiesOption.map((cities, index) => (
                                 <MenuItem key={index} value={cities.id}>{cities.cityName}</MenuItem>
                             ))}
@@ -391,7 +398,7 @@ function Navbar(props) {
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                                <Avatar alt="Remy Sharp" src={userImage} />
                             </IconButton>
                         </Tooltip>
                         {

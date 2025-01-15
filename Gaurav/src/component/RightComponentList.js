@@ -28,7 +28,7 @@ function RightComponentList(props) {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={sortByPopularity}
-                    label="Sort By Popularity : "
+                    label="Sort By Popularity : " 
                     onChange={handleChange}
                 >
                     <MenuItem value={10}>Ten</MenuItem>
@@ -38,7 +38,7 @@ function RightComponentList(props) {
             </FormControl>
             
             {props.restourantList.map((item, index) => (
-                <Card key={index} sx={{ maxWidth: 745, margin: ' 20px auto' }}>
+                <Card key={index} sx={{ margin: '20px auto' }}>
                     <CardActionArea>
                         <CardMedia
                             component="img"

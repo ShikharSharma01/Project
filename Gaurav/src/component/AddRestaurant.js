@@ -11,18 +11,24 @@ const AddRestaurant = () => {
         availableSeats: 0,
         email: "",
         restaurantName: "",
-        status: ""
+        status: "",
+        description: "",
+        about: "",
+        features: ""
     });
     const [isDisable, setIsDisable] = useState(true);
     const [ownerId, setOwnerId] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
     const { state } = location;
+    const [image, setImage] = useState(null);
+
+
     const handleOnChange = (e) => {
         setSignUpData({
             ...signUpData,
             [e.target.name]: (e.target.name === 'availableSeats' || e.target.name === 'amount') ?
-             parseInt(e.target.value)
+                parseInt(e.target.value)
                 : e.target.value
             ,
         });
@@ -32,29 +38,30 @@ const AddRestaurant = () => {
         const jsonObject = JSON.parse(userData);
         setOwnerId(jsonObject.id)
     }, [])
+
     const handleAdd = async (e) => {
-        e.preventDefault();
-        debugger
-        try {
-            const response = await fetch(`http://127.0.0.1:8080/restaurant/add/${ownerId}/${state}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(signUpData),
-            });
+    e.preventDefault();
+    try {
+        const formData = new FormData();
+        formData.append("imageFile", image);
+        formData.append("reqDto", new Blob([JSON.stringify(signUpData)], { type: "application/json" }));
+        console.log(formData)
 
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            resetForm();
-            navigate('/owner')
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        // const response = await fetch(`http://127.0.0.1:8080/restaurant/add/${ownerId}/${state}`, {
+        //     method: 'POST',
+        //     body: formData // Pass formData directly
+        // });
 
-        console.log(signUpData);
-    };
+        // if (!response.ok) {
+        //     throw new Error('Network response was not ok');
+        // }
+        resetForm();
+        navigate('/owner');
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
 
     const resetForm = () => {
         setSignUpData({
@@ -63,8 +70,16 @@ const AddRestaurant = () => {
             availableSeats: 0,
             email: "",
             restaurantName: "",
-            status: ""
+            status: "",
+            description: "",
+            about: "",
+            features: ""
         });
+    };
+
+    const handleImageChange = (e) => {
+        setImage(e.target.files[0]);
+        // setProduct({...product, image: e.target.files[0]})
     };
 
     useEffect(() => {
@@ -74,14 +89,20 @@ const AddRestaurant = () => {
             signUpData.availableSeats === 0 ||
             signUpData.email === '' ||
             signUpData.restaurantName === '' ||
-            signUpData.status === ''
+            signUpData.status === '',
+            signUpData.description === '',
+            signUpData.about === '',
+            signUpData.features === ''
         );
     }, [signUpData.address,
     signUpData.amount,
     signUpData.availableSeats,
     signUpData.email,
     signUpData.restaurantName,
-    signUpData.status]);
+    signUpData.status,
+    signUpData.description,
+    signUpData.about,
+    signUpData.features]);
 
     const openClose = [
         { label: "Close", value: "CLOSE" },
@@ -89,7 +110,16 @@ const AddRestaurant = () => {
     ];
 
     return (
-        <Card sx={{ maxWidth: 600 }}>
+        <div style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            maxHeight: '95vh',
+            overflowY: 'auto',
+            height: '120vh'
+        }}>
+
+           <Card sx={{ maxWidth: 600 }}>
             <CardActionArea>
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
@@ -143,6 +173,40 @@ const AddRestaurant = () => {
                         value={signUpData.availableSeats}
                         onChange={(e) => handleOnChange(e)}
                     />
+                    <TextField style={{ width: "100%", marginBottom: '5px' }}
+                        id="outlined-multiline-flexible"
+                        label="Description"
+                        multiline
+                        maxRows={4}
+                        name='description'
+                        value={signUpData.description}
+                        onChange={(e) => handleOnChange(e)}
+                    />
+                    <TextField style={{ width: "100%", marginBottom: '5px' }}
+                        id="outlined-multiline-flexible"
+                        label="About"
+                        multiline
+                        maxRows={4}
+                        name='about'
+                        value={signUpData.about}
+                        onChange={(e) => handleOnChange(e)}
+                    />
+                    <TextField style={{ width: "100%", marginBottom: '5px' }}
+                        id="outlined-multiline-flexible"
+                        label="Features"
+                        multiline
+                        maxRows={4}
+                        name='features'
+                        value={signUpData.features}
+                        onChange={(e) => handleOnChange(e)}
+                    />
+                    <div>
+                        <InputLabel id="demo-simple-select-label">Image</InputLabel>
+                        <input
+                            type="file"
+                            onChange={handleImageChange}
+                        />
+                    </div>
                     <InputLabel id="demo-simple-select-label">Role</InputLabel>
                     <Select
                         sx={{ width: '100px' }}
@@ -161,8 +225,14 @@ const AddRestaurant = () => {
                     <Button variant="contained" onClick={handleAdd}>Add</Button>
                 </CardContent>
             </CardActionArea>
-        </Card>
+        </Card> 
+        </div>
+        
     )
 };
 
 export default AddRestaurant;
+
+
+
+
